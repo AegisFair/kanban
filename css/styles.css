@@ -1,0 +1,55 @@
+@import url(prealoder.css);
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 62.5%;
+}
+body:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.myCanbanDesks {
+    float: left;
+    width: 20%;
+}
+    .myCanbanDesks h2 {
+        text-align: center;
+    }
+.kanban_table {
+    width: 80%;
+    float: right;
+    border-collapse: collapse;
+    border-left: 1px dotted gray;
+}
+.kanban_table col {
+    width: 33%;
+}
+.kanban_table col:nth-of-type(2){
+    border-left: 3px solid #999;
+    border-right: 3px solid #999;
+}
+.kanban_table th {
+    border-bottom: 3px solid #999;
+    font-size: 2em;
+}
+.kanban_table td{
+    empty-cells: hide;
+    text-align: center;
+    padding: 15px 0;
+}
+.kanban_table textarea {
+    resize: none;
+    width: 80%;
+    height : 100px;
+}
+footer {
+    clear: both;
+}
+#preloader {
+    display: none;
+}
