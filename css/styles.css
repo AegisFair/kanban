@@ -26,29 +26,34 @@ body:after {
     border-collapse: collapse;
     border-left: 1px dotted gray;
 }
-.kanban_table col {
-    width: 33%;
-}
-.kanban_table col:nth-of-type(2){
-    border-left: 3px solid #999;
-    border-right: 3px solid #999;
-}
-.kanban_table th {
-    border-bottom: 3px solid #999;
-    font-size: 2em;
-}
-.kanban_table td{
-    empty-cells: hide;
-    text-align: center;
-    padding: 15px 0;
-}
-.kanban_table textarea {
-    resize: none;
-    width: 80%;
-    height : 100px;
-}
+    .kanban_table col {
+        width: 33%;
+    }
+    .kanban_table col:nth-of-type(2){
+        border-left: 3px solid #999;
+        border-right: 3px solid #999;
+    }
+    .kanban_table th {
+        border-bottom: 3px solid #999;
+        font-size: 2em;
+    }
+    .kanban_table td{
+        empty-cells: hide;
+        text-align: center;
+        padding: 15px 0;
+    }
+    .kanban_table textarea {
+        resize: none;
+        width: 80%;
+        height : 100px;
+    }
+    .kanban_table button {
+        width: 80%;
+        font-size: 3em;
+    }
 footer {
     clear: both;
+    padding: 30% 0;
 }
 #preloader {
     display: none;

@@ -80,14 +80,16 @@ class Model_Desk extends Model {
             return null;
         }
     }
-    function display_desk($massDesks){
+    function display_desk($massDesks,$id_desk=null){
         global $host,$user,$password_db,$database;
-        // Из массива со столами, выбираем id_desk первого стола
         if($massDesks==null){
             return [];
         }
         else{
-            $id_desk=$massDesks[0]['id_desk'];
+            if($id_desk==null){
+                // Если id_desk не выбран, по умолчанию выбираем первую попавшуюся
+                $id_desk=$massDesks[0]['id_desk'];
+            }
             $allColumnsForDesk=[];
             // Запрос к таблице column_do
                 // узнаем сколько textarea в данном столбце
@@ -96,19 +98,19 @@ class Model_Desk extends Model {
             $query="SELECT field,id_textArea, field_order FROM column_do WHERE id_desk=".$id_desk;
             $result=mysqli_query($link,$query) or die (mysqli_error($link));
             for ($to_do=[];$row=mysqli_fetch_assoc($result);$to_do[]=$row){}
-            $allColumnsForDesk['column_do']=$to_do;    
+            $allColumnsForDesk['columns']['column_do']=$to_do;    
             // Запрос к таблице column_doing
                 // узнаем сколько textarea в данном столбце
             $query="SELECT field,id_textArea, field_order FROM column_doing WHERE id_desk=".$id_desk;
             $result=mysqli_query($link,$query) or die (mysqli_error($link));
             for ($to_doing=[];$row=mysqli_fetch_assoc($result);$to_doing[]=$row){}
-            $allColumnsForDesk['column_doing']=$to_doing;    
+            $allColumnsForDesk['columns']['column_doing']=$to_doing;    
             // Запрос к таблице column_done
                 // узнаем сколько textarea в данном столбце
                 $query="SELECT field,id_textArea, field_order FROM column_done WHERE id_desk=".$id_desk;
                 $result=mysqli_query($link,$query) or die (mysqli_error($link));
                 for ($to_done=[];$row=mysqli_fetch_assoc($result);$to_done[]=$row){}
-                $allColumnsForDesk['column_done']=$to_done;
+                $allColumnsForDesk['columns']['column_done']=$to_done;
             mysqli_close($link); //Закрыли соединение с mySQL            
             //////////////////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////////////////
@@ -135,48 +137,77 @@ class Model_Desk extends Model {
             /*
                  Array
                 (
-                    [column_do] => Array
-                    (
-                        [0] => Array
+                    [columns] => Array
                         (
-                            [field] => test_запись в textAreaку
-                            [id_textArea] => 1
-                            [field_order] => 0
+                            [column_do] => Array
+                                (
+                                    [0] => Array
+                                        (
+                                            [field] => test_запись в texxtArweaкуfds
+                                            [id_textArea] => 1
+                                            [field_order] => 0
+                                        )
+
+                                    [1] => Array
+                                        (
+                                            [field] => еще одна запqись! Воиwстинуddfds
+                                            [id_textArea] => 2
+                                            [field_order] => 1
+                                        )
+                                )
+                            [column_doing] => Array
+                                (
+                                    [0] => Array
+                                        (
+                                            [field] => test_dwoing_1
+                                            [id_textArea] => 2
+                                            [field_order] => 1
+                                        )
+
+                                    [1] => Array
+                                        (
+                                            [field] => hello3wwdvfdfsd
+                                            [id_textArea] => 1
+                                            [field_order] => 5
+                                        )
+
+                                )
+                            [column_done] => Array
+                                (
+                                    [0] => Array
+                                        (
+                                            [field] => test_done_1x
+                                            [id_textArea] => 2
+                                            [field_order] => 1
+                                        )
+
+                                    [1] => Array
+                                        (
+                                            [field] => test_donvcdscxezxffdsd
+                                            [id_textArea] => 1
+                                            [field_order] => 5
+                                        )
+                                )
                         )
-                    )
-                    [column_doing] => Array
-                    (
-                        [0] => Array
-                        (
-                            [field] => test_запись в textAreaку
-                            [id_textArea] => 1
-                            [field_order] => 0
-                        )
-                    )
-                    [column_done] => Array
-                    (
-                        [0] => Array
-                        (
-                            [field] => test_запись в textAreaку
-                            [id_textArea] => 1
-                            [field_order] => 0
-                        )
-                    )
+                    [id_desk] => 1
                 )
             */
             //////////////////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////////////////
             // Необходимо сориторовать элемент по field_order'y (по возрастанию)
             // запись вида &$currentColumn - создает ссылку на значения массива
-            foreach ($allColumnsForDesk as &$currentColumn) {
+            foreach ($allColumnsForDesk['columns'] as &$currentColumn) {
                 usort($currentColumn, function($a, $b){
                     return $a['field_order']-$b['field_order'];
                 });
             }
-            // echo "<pre style='font-size:16px'>";
+            
+            // Добавляем id стола у которого взяты содержимое всех колонок
+            $allColumnsForDesk['id_desk']=$id_desk;
+            // Возвращаем сортированный массив по field_order'у
+            // echo "<pre style='font-size:10px'>";
             // print_r($allColumnsForDesk);
             // echo "</pre>";
-            // Возвращаем сортированный массив по field_order'у
             return $allColumnsForDesk;
         }
     }
@@ -202,6 +233,34 @@ class Model_Desk extends Model {
             $result=mysqli_query($link,$query) or die (mysqli_error($link));
         // print_r($query);
             // Отдельно будем передавать значения для порядка order
+    }
+    function createTextarea($arrayValues){
+        global $host,$user,$password_db,$database;
+        $link = mysqli_connect($host, $user, $password_db, $database) 
+            or die("Ошибка " . mysqli_error($link));
+        switch ($arrayValues['column']) {
+            case 'to_do':
+                $table_column="column_do";
+                break;
+            case 'to_doing':
+                $table_column="column_doing";
+                break;
+            case 'to_done':
+                $table_column="column_done";
+                break;
+        }
+        // Сперва узнаем максимальный field_order в таблице $table_column
+            // чтобы новая textarea имела на +1 больше порядок
+        $query="SELECT MAX(field_order) FROM $table_column WHERE id_desk='".$arrayValues['id_desk']."'";
+        $result=mysqli_query($link,$query) or die (mysqli_error($link));
+        $oldFieldOrder=mysqli_fetch_row($result)[0];
+        $newfieldOrder=$oldFieldOrder+1;
+        // Создаем соответствующую textare'йку
+        $query="INSERT INTO $table_column (id_desk,field_order) VALUES ('".$arrayValues['id_desk']."','".$newfieldOrder."')";
+       
+        $result=mysqli_query($link,$query) or die (mysqli_error($link));
+        $id_textArea=mysqli_insert_id($link);
+        return $id_textArea;
     }
 }
 ?>

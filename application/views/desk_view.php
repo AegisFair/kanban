@@ -22,8 +22,19 @@
         <input type="text" name="newDesk">
         <button type="submit">Создать</button>
     </form> -->
+    <footer>
+        <section id='preloader'>
+            <div class="sk-wave">
+                <div class="sk-rect sk-rect-1"></div>
+                <div class="sk-rect sk-rect-2"></div>
+                <div class="sk-rect sk-rect-3"></div>
+                <div class="sk-rect sk-rect-4"></div>
+                <div class="sk-rect sk-rect-5"></div>
+            </div>
+        </section>
+    </footer>
 </aside>
-<table class="kanban_table">
+<table class="kanban_table" id="<?php echo(isset($data['deskANDallColumns']['id_desk'])) ? $data['deskANDallColumns']['id_desk'] : null; ?>">
     <colgroup>
         <col>
         <col>
@@ -36,44 +47,59 @@
             <th class="done">Done</th>
         </tr>
     </thead>
-    </tbody>
+    <tbody>
     <?php 
     // Узнаем сколько строк <tr> необходимо
         //для этого ищем колонку, в котором больше всех элементов
             // и берем данное число за основу
         $maxNumberOfElm=0;
-        foreach ($data['allColumns'] as $value) {
-            if ($maxNumberOfElm<count($value)) {
-                $maxNumberOfElm=count($value);
+        if(isset($data['deskANDallColumns']['columns'])){
+            foreach ($data['deskANDallColumns']['columns'] as $value) {
+                if ($maxNumberOfElm<count($value)) {
+                    $maxNumberOfElm=count($value);
+                }
             }
         }
         for ($i=0; $i < $maxNumberOfElm; $i++) {
             // значение поля field для колонки column_do
-            @    $columnDoFieldDo=$data['allColumns']['column_do'][$i]['field'];
-            @    $columnDoIdTextarea=$data['allColumns']['column_do'][$i]['id_textArea'];
+            @    $columnDoFieldDo=$data['deskANDallColumns']['columns']['column_do'][$i]['field'];
+            @    $columnDoIdTextarea=$data['deskANDallColumns']['columns']['column_do'][$i]['id_textArea'];
             // значение поля field для колонки column_doing
-            @    $columnDoingFieldDoing= ($data['allColumns']['column_doing'][$i]['field']);
-            @   $columnDoingIdTextarea=$data['allColumns']['column_doing'][$i]['id_textArea'];
+            @    $columnDoingFieldDoing= ($data['deskANDallColumns']['columns']['column_doing'][$i]['field']);
+            @   $columnDoingIdTextarea=$data['deskANDallColumns']['columns']['column_doing'][$i]['id_textArea'];
             // значение поля field для колонки column_done
-            @    $columnDoneFieldDone=$data['allColumns']['column_done'][$i]['field'];
-            @    $columnDoneIdTextarea=$data['allColumns']['column_done'][$i]['id_textArea'];
-            //php (isset($data['allColumns']['column_do'][$i])) ? ("<textarea name=$columnDoIdTextarea".">".$columnDoFieldDo."</textarea>") : "null"; 
+            @    $columnDoneFieldDone=$data['deskANDallColumns']['columns']['column_done'][$i]['field'];
+            @    $columnDoneIdTextarea=$data['deskANDallColumns']['columns']['column_done'][$i]['id_textArea'];
+            //php (isset($data['deskANDallColumns']['column_do'][$i])) ? ("<textarea name=$columnDoIdTextarea".">".$columnDoFieldDo."</textarea>") : "null"; 
             ?>
             <tr>
-                    <td>
-                        <?php
-                            echo (isset($data['allColumns']['column_do'][$i])) ? "<textarea class='to_do' name=$columnDoIdTextarea".">".$columnDoFieldDo."</textarea>" : null ;
-                        ?>
-                    </td>
-                    <td>
-                        <?php echo (isset($data['allColumns']['column_doing'][$i])) ? "<textarea class='to_doing' name=$columnDoingIdTextarea".">".$columnDoingFieldDoing."</textarea>" : null; ?>
-                    </td>
-                    <td>
-                        <?php echo (isset($data['allColumns']['column_done'][$i])) ? "<textarea class='to_done' name=$columnDoneIdTextarea".">".$columnDoneFieldDone."</textarea>" : null; ?>
-                    </td>
+                <td class="to_do">
+                    <?php
+                        echo (isset($data['deskANDallColumns']['columns']['column_do'][$i])) ? "<textarea class='to_do' name=$columnDoIdTextarea".">".$columnDoFieldDo."</textarea>" : null ;
+                    ?>
+                </td>
+                <td class="to_doing">
+                    <?php echo (isset($data['deskANDallColumns']['columns']['column_doing'][$i])) ? "<textarea class='to_doing' name=$columnDoingIdTextarea".">".$columnDoingFieldDoing."</textarea>" : null; ?>
+                </td>
+                <td class="to_done">
+                    <?php echo (isset($data['deskANDallColumns']['columns']['column_done'][$i])) ? "<textarea class='to_done' name=$columnDoneIdTextarea".">".$columnDoneFieldDone."</textarea>" : null; ?>
+                </td>
             </tr>   
         <?php } ?>
-   
+    </tbody>
+    <tfoot>
+        <tr>
+            <td>
+            <button class="to_do">+</button>
+            </td>
+            <td>
+            <button class="to_doing">+</button>
+            </td>
+            <td>
+            <button class="to_done">+</button>
+            </td>
+        </tr>
+    </tfoot>
     <!-- <tr>
         <td>
             <textarea name="ToDo[]"></textarea>
@@ -85,16 +111,4 @@
 
         </td>
     </tr> -->
-    </tbody>
 </table>
-<footer>
-        <section id='preloader'>
-            <div class="sk-wave">
-                <div class="sk-rect sk-rect-1"></div>
-                <div class="sk-rect sk-rect-2"></div>
-                <div class="sk-rect sk-rect-3"></div>
-                <div class="sk-rect sk-rect-4"></div>
-                <div class="sk-rect sk-rect-5"></div>
-            </div>
-        </section>
-    </footer>
