@@ -262,5 +262,23 @@ class Model_Desk extends Model {
         $id_textArea=mysqli_insert_id($link);
         return $id_textArea;
     }
+    function deleteTextarea($arrayValues){
+        global $host,$user,$password_db,$database;
+        $link = mysqli_connect($host, $user, $password_db, $database) 
+            or die("Ошибка " . mysqli_error($link));
+        switch ($arrayValues['column']) {
+            case 'to_do':
+                $table_column="column_do";
+                break;
+            case 'to_doing':
+                $table_column="column_doing";
+                break;
+            case 'to_done':
+                $table_column="column_done";
+                break;
+        }
+        $query="DELETE FROM $table_column WHERE id_textArea='".$arrayValues['id_textarea']."'";
+        $result=mysqli_query($link,$query) or die (mysqli_error($link));
+    }
 }
 ?>

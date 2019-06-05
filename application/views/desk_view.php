@@ -48,7 +48,11 @@
         </tr>
     </thead>
     <tbody>
-    <?php 
+    <?php
+    // Управляющие элементы для textarea
+    $controls="<span class='delete'>X</span>
+        <span class='arrow-up'>&#9650;</span>
+        <span class='arrow-down'>&#9660;</span>";
     // Узнаем сколько строк <tr> необходимо
         //для этого ищем колонку, в котором больше всех элементов
             // и берем данное число за основу
@@ -75,14 +79,14 @@
             <tr>
                 <td class="to_do">
                     <?php
-                        echo (isset($data['deskANDallColumns']['columns']['column_do'][$i])) ? "<textarea class='to_do' name=$columnDoIdTextarea".">".$columnDoFieldDo."</textarea>" : null ;
+                        echo (isset($data['deskANDallColumns']['columns']['column_do'][$i])) ? "<textarea class='to_do' name=$columnDoIdTextarea".">".$columnDoFieldDo."</textarea>".$controls : null ;
                     ?>
                 </td>
                 <td class="to_doing">
-                    <?php echo (isset($data['deskANDallColumns']['columns']['column_doing'][$i])) ? "<textarea class='to_doing' name=$columnDoingIdTextarea".">".$columnDoingFieldDoing."</textarea>" : null; ?>
+                    <?php echo (isset($data['deskANDallColumns']['columns']['column_doing'][$i])) ? "<textarea class='to_doing' name=$columnDoingIdTextarea".">".$columnDoingFieldDoing."</textarea>".$controls : null; ?>
                 </td>
                 <td class="to_done">
-                    <?php echo (isset($data['deskANDallColumns']['columns']['column_done'][$i])) ? "<textarea class='to_done' name=$columnDoneIdTextarea".">".$columnDoneFieldDone."</textarea>" : null; ?>
+                    <?php echo (isset($data['deskANDallColumns']['columns']['column_done'][$i])) ? "<textarea class='to_done' name=$columnDoneIdTextarea".">".$columnDoneFieldDone."</textarea>".$controls : null; ?>
                 </td>
             </tr>   
         <?php } ?>

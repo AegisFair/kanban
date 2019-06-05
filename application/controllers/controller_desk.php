@@ -23,5 +23,8 @@ class Controller_Desk extends Controller {
     function action_xhr_create(){
         echo $this->model->createTextarea($_POST);
     }
+    function action_xhr_delete(){
+        $this->model->deleteTextarea($_POST);
+    }
 }
 ?>

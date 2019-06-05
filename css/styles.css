@@ -40,12 +40,34 @@ body:after {
     .kanban_table td{
         empty-cells: hide;
         text-align: center;
-        padding: 15px 0;
+        /* padding: 15px 0; */
+        padding: 1% 0;
+        position: relative;
     }
     .kanban_table textarea {
         resize: none;
         width: 80%;
         height : 100px;
+    }
+    .kanban_table td span {
+        display: inline-block;
+        position: absolute;
+        width: 10%;
+        height: 50px;
+        border: 1px solid grey;
+    }
+    .kanban_table .delete {
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    .kanban_table .arrow-up {
+        right: 0;
+        top: calc(50% - 50px);
+    }
+    .kanban_table .arrow-down {
+        right: 0;
+        top: calc(50%);
     }
     .kanban_table button {
         width: 80%;
