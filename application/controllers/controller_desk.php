@@ -26,5 +26,8 @@ class Controller_Desk extends Controller {
     function action_xhr_delete(){
         $this->model->deleteTextarea($_POST);
     }
+    function action_xhr_order(){
+        $this->model->orderTextarea($_POST);
+    }
 }
 ?>

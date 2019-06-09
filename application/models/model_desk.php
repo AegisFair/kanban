@@ -280,5 +280,58 @@ class Model_Desk extends Model {
         $query="DELETE FROM $table_column WHERE id_textArea='".$arrayValues['id_textarea']."'";
         $result=mysqli_query($link,$query) or die (mysqli_error($link));
     }
+    function orderTextarea($arrayValues){
+        global $host,$user,$password_db,$database;
+        $link = mysqli_connect($host, $user, $password_db, $database);
+        switch ($arrayValues['column']) {
+            case 'to_do':
+                $table_column="column_do";
+                break;
+            case 'to_doing':
+                $table_column="column_doing";
+                break;
+            case 'to_done':
+                $table_column="column_done";
+                break;
+        }
+        // Определим тип изменения порядка arrow-up или arrow-down
+            // Для arrow-up
+        if(isset($arrayValues['id_textarea_previous'])){
+            // Узнаем field-order у textare's
+        $query="SELECT field_order FROM $table_column WHERE id_textarea=".$arrayValues["id_textarea_current"];
+        $result=mysqli_query($link,$query) or die (mysqli_error($link));
+        $currentID = mysqli_fetch_assoc($result)['field_order'];
+        
+        $query="SELECT field_order FROM $table_column WHERE id_textarea=".$arrayValues["id_textarea_previous"];
+        $result=mysqli_query($link,$query) or die (mysqli_error($link));
+        $previousID=mysqli_fetch_assoc($result)['field_order'];
+        
+            //Поменяем местами field_order textarea's 
+        $query="UPDATE $table_column SET field_order='".$currentID."' WHERE id_textArea=".$arrayValues['id_textarea_previous'];
+        $result=mysqli_query($link,$query) or die (mysqli_error($link));
+
+        $query="UPDATE $table_column SET field_order='".$previousID."' WHERE id_textArea=".$arrayValues['id_textarea_current'];
+        $result=mysqli_query($link,$query) or die (mysqli_error($link));
+        }
+        // Для arrow_down
+        else if(isset($arrayValues['id_textarea_next'])){
+                // Узнаем field-order у textare's
+        $query="SELECT field_order FROM $table_column WHERE id_textarea=".$arrayValues["id_textarea_current"];
+        $result=mysqli_query($link,$query) or die (mysqli_error($link));
+        $currentID = mysqli_fetch_assoc($result)['field_order'];
+        
+        $query="SELECT field_order FROM $table_column WHERE id_textarea=".$arrayValues["id_textarea_next"];
+        $result=mysqli_query($link,$query) or die (mysqli_error($link));
+        $nextID=mysqli_fetch_assoc($result)['field_order'];
+        
+            //Поменяем местами field_order textarea's 
+        $query="UPDATE $table_column SET field_order='".$currentID."' WHERE id_textArea=".$arrayValues['id_textarea_next'];
+        $result=mysqli_query($link,$query) or die (mysqli_error($link));
+
+        $query="UPDATE $table_column SET field_order='".$nextID."' WHERE id_textArea=".$arrayValues['id_textarea_current'];
+        $result=mysqli_query($link,$query) or die (mysqli_error($link));
+        }
+    }
+        
 }
 ?>

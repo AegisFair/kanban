@@ -75,8 +75,8 @@ function Init(){
       }
     }
   }
-  function searchTextarea(controlElm){
-    parentTd=controlElm.parentElement;
+  function searchTextarea(parentTd){
+    // parentTd=controlElm.parentElement;
     // Поиск textarea по всем детям parent'a td
     for (let i = 0; i < parentTd.children.length; i++) {
       if (parentTd.children[i].nodeName=="TEXTAREA"){
@@ -87,7 +87,8 @@ function Init(){
     return null;
   }
   function deleteTextarea(e){
-    var currentTextarea=searchTextarea(e.target);
+    var currentTextarea=searchTextarea(e.target.parentNode);
+    console.log(currentTextarea)
     // Внести изменения на сервер
     ajax.open("POST",'/desk/xhr_delete',true);
     ajax.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -99,7 +100,6 @@ function Init(){
             document.getElementById('preloader').style="display:none";
             var currentTd=currentTextarea.parentNode;
             currentTd.innerHTML="";
-            console.log(currentTd);
             shiftUpTextarea(currentTd,true);
         }
     }
@@ -108,16 +108,15 @@ function Init(){
   }
   function shiftUpTextarea(emptyTd,recursiveShift){
     var tbody=document.querySelector(".kanban_table tbody");
-    var row=emptyTd.parentNode;
-    var nextRow=tbody.rows[row.sectionRowIndex+1];
     
     // <table>.rows - коллекция строк TR таблицы
       // <tr>.rowIndex – номер строки в таблице
       // <tbody>.rows – коллекция строк TR секции.
     if(recursiveShift===true){
-      // console.log(recursiveShift);
+      var row=emptyTd.parentNode;
+      var nextRow=tbody.rows[row.sectionRowIndex+1];
       if(nextRow!==undefined){
-        console.log(nextRow);
+        // console.log(nextRow);
         for(let i=0;i<nextRow.children.length;i++){
           if(nextRow.children[i].className==emptyTd.className){
             var td=nextRow.children[i];
@@ -136,14 +135,69 @@ function Init(){
           }
         }
       }
-      // console.dir(table.rows)
-      // console.log(emptyTd.parentElement.rowIndex);
     }else{
-      searchTextarea(e.target);
+      var row=emptyTd.target.parentNode.parentNode;
+      var currentTd=emptyTd.target.parentNode,
+          indexTd=currentTd.cellIndex,
+          currentTextarea=searchTextarea(emptyTd.target.parentNode);
+      // Это не первая строка, тогда ...
+      if(row.sectionRowIndex!==0){
+        let previousTd=tbody.rows[row.sectionRowIndex-1].cells[indexTd],
+            previousTextarea=searchTextarea(previousTd);
+        // Динамичное изменение данных на сервере
+        ajax.open("POST",'/desk/xhr_order',true);
+        ajax.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        var param="column="+currentTextarea.className+"&id_textarea_current="+currentTextarea.name+"&id_textarea_previous="+previousTextarea.name;
+        ajax.onreadystatechange=function(){
+          if(ajax.readyState!==4){
+            document.getElementById('preloader').style="display:block";
+          }else{
+            document.getElementById('preloader').style="display:none";
+            // Динамичное изменение DOM клиента
+            // Присвоение значений: Предыдущей новое, а новой предыдущее
+            previousTd.innerHTML=[currentTd.innerHTML,currentTd.innerHTML=previousTd.innerHTML][0];
+            clickControl();
+          }
+        }
+        ajax.send(param);
+      }
     }
   }
-  function shiftDownTextarea(e,recursiveShift){
-    searchTextarea(e.target);
+  function shiftDownTextarea(e){
+    var tbody=document.querySelector(".kanban_table tbody");
+    var row=e.target.parentNode.parentNode;
+    var currentTd=e.target.parentNode,
+        indexTd=currentTd.cellIndex,
+        currentTextarea=searchTextarea(e.target.parentNode),
+        nextTextarea;
+    // Это не последняя строка и в ней есть содержимое для <td>, тогда ...
+    if(row.sectionRowIndex < tbody.rows.length-1){
+      nextRow=tbody.rows[row.sectionRowIndex+1];
+      for(let i=0; i<nextRow.cells.length; i++){
+        if(nextRow.cells[i].className==currentTd.className){
+          var nextTd=nextRow.cells[i];
+        }
+      }
+      // Содеримое не пустое, то ...
+      if(nextTextarea=searchTextarea(nextTd)){
+        // Динамичное изменение данных на сервере
+        ajax.open("POST",'/desk/xhr_order',true);
+        ajax.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        var param="column="+currentTextarea.className+"&id_textarea_current="+currentTextarea.name+"&id_textarea_next="+nextTextarea.name;
+        ajax.onreadystatechange=function(){
+          if(ajax.readyState!==4){
+            document.getElementById('preloader').style="display:block";
+          }else{
+            document.getElementById('preloader').style="display:none";
+            // Динамичное изменение DOM клиента
+            // Присвоение значений: Предыдущей новое, а новой предыдущее
+            nextTd.innerHTML=[currentTd.innerHTML,currentTd.innerHTML=nextTd.innerHTML][0];
+            clickControl();
+          }
+        }
+        ajax.send(param);
+      }
+    }
   }
   function clickButtonForNewTextarea(){
     var buttons=document.querySelectorAll(".kanban_table button");
