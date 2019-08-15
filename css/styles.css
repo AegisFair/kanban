@@ -7,12 +7,33 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 62.5%;
+    height: 100vh;
+    position: relative;
 }
 body:after {
     content: "";
     display: table;
     clear: both;
 }
+/* authorization */
+.auth_form {
+    display: inline-block;
+    border: 1px solid gray;
+    padding: 15px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -25%;
+    /* width: 350px; */
+}
+.auth_form > * {
+    width: 100%;
+}
+.auth_form button {
+    width: 50%;
+    margin: 10px 0 0;
+}
+/* desk */
 .myCanbanDesks {
     float: left;
     width: 20%;
@@ -79,4 +100,18 @@ footer {
 }
 #preloader {
     display: none;
+}
+/* admin styles */
+.admin-panel {
+    display: flex;
+    height: 100vh;
+}
+.admin-panel > section {
+    flex: 1 1 33%;
+}
+.admin-panel > section:not(:last-of-type) {
+    border-right: 3px solid gray;
+}
+.admin-panel ul {
+    list-style-type: none;
 }

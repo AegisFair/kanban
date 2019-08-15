@@ -10,7 +10,7 @@
                 for ($i=0; $i <count($data["desks"]) ; $i++) { 
                     $nameDesk=$data['desks'][$i]['name_desk'];
                     $idDesk=$data['desks'][$i]['id_desk'];
-                    echo "<li><a href=".$_SERVER['REQUEST_URI']."?idDesk=".$idDesk.">".$nameDesk."</a></li>";
+                    echo "<li><a href=".$_SERVER['REQUEST_URI']."index/?idDesk=".$idDesk.">".$nameDesk."</a></li>";
                 }
             }
             else{

@@ -21,9 +21,19 @@ class Model_Main extends Model {
             $result=mysqli_query($link,$query) or die (mysqli_error($link));
             // если запрос выполнился успешно и есть такой пользователь, то создаем куку
             if (mysqli_num_rows($result)==1) {
-                setcookie('username',$login);
-                mysqli_close($link); //Закрыли соединение с mySQL
-                return true;
+                // проверка на статус - админ/юзер
+                $info_about_user=mysqli_fetch_assoc($result)['status'];
+                $status=$info_about_user['status'];
+                if ($status==1) {
+                    // Это админ
+                    mysqli_close($link); //Закрыли соединение с mySQL
+                    setcookie('username',$login);
+                    return "admin";
+                }else{
+                    setcookie('username',$login);
+                    mysqli_close($link); //Закрыли соединение с mySQL
+                    return true;
+                }
             }
             else {
                 return "Неверный логин/пароль!";

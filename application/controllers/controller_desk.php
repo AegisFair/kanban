@@ -10,11 +10,12 @@ class Controller_Desk extends Controller {
         $data=[];
         // Массива для вывода списка доступных досок
         $data['desks']=$this->model->allDesks();
-        
-        $data['deskANDallColumns']=$this->model->display_desk($data['desks']);
-        //здесь же проверяем нажатие кнопки newDesk... 
+        if($_GET['idDesk']){
+             $data['deskANDallColumns']=$this->model->display_desk($data['desks'],$_GET['idDesk']);
+        }else{
+            $data['deskANDallColumns']=$this->model->display_desk($data['desks']);
+        }
 
-        // 
         $this->view->generate('desk_view.php','template_view.php',$data);
     }
     function action_xhr_save(){

@@ -12,6 +12,8 @@ class Controller_Main extends Controller {
         $data=$this->model->checkUser();
         if ($data===true) {
             header("Location: http://".$_SERVER['HTTP_HOST']."/desk/");
+        }else if($data==="admin"){
+            header("Location: http://".$_SERVER['HTTP_HOST']."/admin/");
         }
         else {
             $this->action_index($data);
