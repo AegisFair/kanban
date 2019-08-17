@@ -20,8 +20,10 @@
                 }
             ?>
         </ul>
+        <div class="createDesk">
+            <input class="createDeskInput" type="text" name="name_desk">
+            <button class="createDeskButton">Создать доску</button>
+        </div>
     </section>
-    <section class="current-desk">
-
-    </section>
+    <section class="current-desk"></section>
 </div>

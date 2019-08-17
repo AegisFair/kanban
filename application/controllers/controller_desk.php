@@ -10,7 +10,7 @@ class Controller_Desk extends Controller {
         $data=[];
         // Массива для вывода списка доступных досок
         $data['desks']=$this->model->allDesks();
-        if($_GET['idDesk']){
+        if(isset($_GET['idDesk'])){
              $data['deskANDallColumns']=$this->model->display_desk($data['desks'],$_GET['idDesk']);
         }else{
             $data['deskANDallColumns']=$this->model->display_desk($data['desks']);

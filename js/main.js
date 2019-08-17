@@ -23,10 +23,12 @@ function Init() {
   // Onclick
   clickButtonForNewTextarea();
   clickControl();
+  clickCreateDesk();
 
   //for admin panel
   clickDesks();
   clickUsersList();
+  //deleteAccessUserForDesk(); - мы должны вызывать в функции clickDesks();
 
   function changeTextArea() {
     // Создать событие при (изменение и снятия фокуса) с textarea. 
@@ -299,62 +301,160 @@ function Init() {
     for (let i = 0; i < liElements.length; i++) {
       liElements[i].onclick = function (elm) {
         //Очистка содержимого <section class="current-desk>Тут удаляем всё</section>" 
-        document.querySelector(".current-desk").innerHTML="";
+        document.querySelector(".current-desk").innerHTML = "";
         //
         ajax.open("POST", '/admin/xhr_click_desks', true);
         ajax.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        var id_desk=elm.target.id;
+        var id_desk = elm.target.id;
         var param = "id_desk=" + id_desk;
         ajax.onreadystatechange = function () {
           if (ajax.readyState !== 4) {
             //document.getElementById('preloader').style = "display:block";
           } else {
             //document.getElementById('preloader').style = "display:none";
-            var str_response=ajax.responseText;
-            str_response = str_response.split(",");
-            for (let k=0; k<str_response.length ; k++ ){
-              str_response[k]=str_response[k].replace(/.+login.+\"(\w+)\".+/,'$1');
-            }
-            var ul=document.createElement('ul');
-            
-            for(let k =0; k< str_response.length;k++){
-              var li=document.createElement('li');
-              li.innerHTML=str_response[k];
+            var str_response = ajax.responseText;
+            //if(str_response=="[]"){str_response=""}
+            //str_response = str_response.split(",");
+            str_response=JSON.parse(str_response);
+            console.log(str_response);
+            // for (let k = 0; k < str_response.length; k++) {
+            //   str_response[k] = str_response[k].replace(/.+login.+\"(\w+)\".+/, '$1');
+            // }
+            var ul = document.createElement('ul');
+
+            for (let k = 0; k < str_response.length; k++) {
+              var li = document.createElement('li');
+              li.innerHTML = str_response[k].login;
+              li.id = str_response[k].login;
               ul.append(li);
+              // Код для удаления доступа к таблице
+              li.onclick = function (e) {
+                deleteAccessForUser(e);
+              };
             }
             document.querySelector(".current-desk").append(ul);
-            document.querySelector(".current-desk").id=id_desk;
+            document.querySelector(".current-desk").id = id_desk;
             //console.log(str_response);
           }
         }
         ajax.send(param);
-        
+
       }
     }
   }
+  function deleteAccessForUser(event_obj) {
+    ajax.open("POST", '/admin/xhr_delete_user', true);
+    ajax.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    var login = event_obj.target.id;
+    var id_desk = document.querySelector(".current-desk").id;
+    var param = "login=" + login + "&id_desk=" + id_desk;
+    ajax.onreadystatechange = function () {
+      if (ajax.readyState !== 4) {
+        //document.getElementById('preloader').style = "display:block";
+      } else {
+        //document.getElementById('preloader').style = "display:none";
+        var currentLi = event_obj.target;
+        currentLi.remove();
+        ///////// delete desk
+        //Если нет доступных юзеров к таблице
+        // следовательно она никому не нужна
+        // тогда удаляем
+        if (document.querySelector(".current-desk ul li") == null) {
+          deleteDesk();
+        }
+      }
+    }
+    ajax.send(param);
+  }
   function clickUsersList() {
-    var allUsers_li=document.querySelectorAll(".all-users ul li");
-    for(let index=0;index<allUsers_li.length;index++){
-      allUsers_li[index].onclick=function(event_obj) {
-
-        var currentDesk_li=document.querySelectorAll(".current-desk ul li");
-        for (var i=0,count=0; i< currentDesk_li.length;i++){
-          console.log(event_obj.target.id);
-          console.log(currentDesk_li[i].innerHTML);
+    var allUsers_li = document.querySelectorAll(".all-users ul li");
+    for (let index = 0; index < allUsers_li.length; index++) {
+      allUsers_li[index].onclick = function (event_obj) {
+        console.log("clickUsersList");
+        var currentDesk_li = document.querySelectorAll(".current-desk ul li");
+        for (var i = 0, count = 0; i < currentDesk_li.length; i++) {
+          // console.log(event_obj.target.id);
+          // console.log(currentDesk_li[i].innerHTML);
           // Если CurrentDesk не выбран, сравниваться с пустым полем не будет т.к цикл не пустит
-          if(event_obj.target.id != currentDesk_li[i].innerHTML){
+          if (event_obj.target.id != currentDesk_li[i].innerHTML) {
             count++;
           }
         }
-        if(count==currentDesk_li.length && currentDesk_li.length!=0){
+        if (count == currentDesk_li.length /*|| currentDesk_li.length == 0*/) {
           // Такого юзера нет, мы открываем ему доступ к таблице
-          console.log('такого юзера нет')
+          //console.log('такого юзера нет')
           // передать логин и id доски
           // и нарисовать в current desk новый li
+          ajax.open("POST", '/admin/xhr_add_user', true);
+          ajax.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+          var login = event_obj.target.id;
+          var id_desk = document.querySelector(".current-desk").id;
+          var param = "login=" + login + "&id_desk=" + id_desk;
+          ajax.onreadystatechange = function () {
+            if (ajax.readyState !== 4) {
+              //document.getElementById('preloader').style = "display:block";
+            } else {
+              //document.getElementById('preloader').style = "display:none";
+              var ul = document.querySelector(".current-desk ul");
+              var li = document.createElement('li');
+              li.innerHTML = login;
+              ul.append(li);
+            }
+          }
+          ajax.send(param);
         }
 
-      };
+      }
+
+    };
+  }
+  function deleteDesk() {
+    ajax.open("POST", '/admin/xhr_delete_desk', true);
+    ajax.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    var id_desk = document.querySelector(".current-desk").id;
+    var param = "id_desk=" + id_desk;
+    ajax.onreadystatechange = function () {
+      if (ajax.readyState !== 4) {
+        //document.getElementById('preloader').style = "display:block";
+      } else {
+        //document.getElementById('preloader').style = "display:none";
+        var currentUl = document.querySelector(".all-group-desks ul");
+        // Переберем все li, внутри ul
+        for (let i = 0; i < currentUl.children.length; i++) {
+          var currentLi = currentUl.children[i];
+          if (currentLi.id == id_desk) {
+            currentLi.remove();
+          }
+        }
+      }
+    }
+    ajax.send(param);
+  }
+  function clickCreateDesk() {
+    document.querySelector(".createDeskButton").onclick = function () {
+      var nameDesk = document.querySelector(".createDeskInput").value;
+      //Если есть хоть какая-то запись в input, тогда ...
+      if (nameDesk) {
+        ajax.open("POST", '/admin/xhr_create_desk', true);
+        ajax.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        var param = "nameDesk=" + nameDesk;
+        ajax.onreadystatechange = function () {
+          if (ajax.readyState !== 4) {
+            //document.getElementById('preloader').style = "display:block";
+          } else {
+            //document.getElementById('preloader').style = "display:none";
+
+            // получаем от серва id только что созданной таблицы
+            var id_desk = ajax.responseText;
+            var li = document.createElement('li');
+            li.innerHTML = nameDesk;
+            li.id = id_desk;
+            document.querySelector(".all-group-desks ul").append(li);
+            clickDesks();
+          }
+        }
+        ajax.send(param);
+      }
     }
   }
-
 }
